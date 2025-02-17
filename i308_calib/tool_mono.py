@@ -1,46 +1,29 @@
 import argparse
 import os
 import cv2
-import numpy as np
+import yaml
 
 import calib
 import glob
 from capture import new_video_capture, CaptureConfig
 from calib_set import CalibSet
+from tool_base import parse_checkerboard, add_common_args
 from threaded_capture import ThreadedCapture
 
 
-def parse_checkerboard(checkerboard):
-    return tuple(map(int, checkerboard.split("x")))
-
 
 def parse_args():
+
     arg_parser = argparse.ArgumentParser()
 
-    arg_parser.add_argument(
-        "-v", "--video",
-        default=0,
-        help="video device to be opened for calibration eg. 0"
-    )
-
-    arg_parser.add_argument(
-        "-c", "--checkerboard",
-        default='10x7',
-        help="checkerboard eg. '7x10'"
-    )
-
-    arg_parser.add_argument(
-        "-sq", "--square-size",
-        type=float,
-        default=24.2,
-        help="checkerboard square size eg. 24.2"
-    )
+    add_common_args(arg_parser)
 
     arg_parser.add_argument(
         "-d", "--data",
         default="data",
         help="directory where images are going to be stored/retrieved"
     )
+
 
     args = arg_parser.parse_args()
 
@@ -126,7 +109,6 @@ def add_detection(
 
 
 def calibrate(args, cs: CalibSet):
-
     object_points = cs.object_points
     image_points = cs.image_points
     img_shape = cs.image_shape
@@ -150,7 +132,7 @@ def calibrate(args, cs: CalibSet):
 
 
 def load_calib_set(
-    args
+        args
 ):
     checkerboard = args.checkerboard
     checkerboard_world_points = args.square_size * calib.board_points(checkerboard)
@@ -219,8 +201,29 @@ def make_dirs(args):
             print(f"Directory {d} doesn't exist, creating...")
             os.makedirs(d)
 
-def start(args):
 
+def get_capture_config(args):
+
+    ret = CaptureConfig()
+    video = args.video
+    if isinstance(video, str):
+
+        if str.isdigit(video):
+            device = int(video)
+
+        elif video.endswith(".yaml"):
+            # it is a configuration file
+            parsed = yaml.parse(video)
+
+            device = parsed["device"]
+
+        else:
+            device = video
+
+        ret = CaptureConfig(device)
+
+
+def start(args):
     make_dirs(args)
 
     cfg = CaptureConfig(args.video)
@@ -228,7 +231,6 @@ def start(args):
 
     th_cap = ThreadedCapture(cap)
     th_cap.start()
-
 
     print("Checkerboard: ", args.checkerboard)
     print("Square Size: ", args.square_size)

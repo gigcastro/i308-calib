@@ -7,41 +7,14 @@ import calib
 import pickle
 
 from capture import CaptureConfig, new_video_capture
+from tool_base import add_common_args, parse_checkerboard
 from threaded_capture import ThreadedCapture
-import stereo_camera
-
-
-def parse_checkerboard(checkerboard):
-    return tuple(map(int, checkerboard.split("x")))
 
 
 def parse_args():
     arg_parser = argparse.ArgumentParser()
 
-    arg_parser.add_argument(
-        "-v", "--video",
-        default=stereo_camera.DEFAULT_VIDEO_DEVICE,
-        help="video device to be opened for calibration eg. 0"
-    )
-
-    arg_parser.add_argument(
-        "-r", "--resolution",
-        default=stereo_camera.DEFAULT_RESOLUTION,
-        help=f"requested resolution. supported are: {', '.join(stereo_camera.SUPPORTED_RESOLUTIONS.keys())} "
-    )
-
-    arg_parser.add_argument(
-        "-c", "--checkerboard",
-        default='10x7',
-        help="checkerboard eg. '10x7'"
-    )
-
-    arg_parser.add_argument(
-        "-sq", "--square-size",
-        type=float,
-        default=24.2,
-        help="checkerboard square size eg. 24.2"
-    )
+    add_common_args(arg_parser)
 
     arg_parser.add_argument(
         "-d", "--data",
@@ -53,9 +26,11 @@ def parse_args():
 
     # parse checkerboard
     args.checkerboard = parse_checkerboard(args.checkerboard)
-    args.resolution = stereo_camera.SUPPORTED_RESOLUTIONS[args.resolution]
-    args.video = int(args.video)
-    args.square_size = float(args.square_size)
+
+    #     args.resolution = stereo_camera.SUPPORTED_RESOLUTIONS[args.resolution]
+    #     args.video = int(args.video)
+    #     args.square_size = float(args.square_size)
+
     return args
 
 

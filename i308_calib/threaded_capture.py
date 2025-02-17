@@ -44,6 +44,11 @@ class ThreadedCapture:
         #    print("releasing video...")
         #    self.cap.release()
 
+    def release(self):
+        self.stop()
+        self.cap.release()
+        self.cap = None
+
     def capture_loop(self):
 
         try:

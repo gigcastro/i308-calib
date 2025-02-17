@@ -1,0 +1,16 @@
+video: 0
+name: Default
+
+# mode can be 'auto', 'any' or 'dshow'
+# capture_mode: 'auto'
+
+# requested resolution
+# resolution: 1920x1080
+
+# available resolution
+#resolutions:
+#  - 1920x1080
+#  - 1280x720
+
+# threaded, if True the captures are made in a separate thread preventing gui from block
+# threaded: False
