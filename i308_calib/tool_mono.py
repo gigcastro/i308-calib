@@ -25,7 +25,7 @@ def parse_args():
     args = arg_parser.parse_args()
 
     if not args.video and not args.config:
-        raise Exception("must specify either video or config")
+        arg_parser.error("Either -v (video) or -cfg (config) must be specified, or both.")
 
     # parse checkerboard
     args.checkerboard = parse_checkerboard(args.checkerboard)
