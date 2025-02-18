@@ -7,13 +7,11 @@ import calib
 import glob
 from capture import new_video_capture, CaptureConfig
 from calib_set import CalibSet
-from tool_base import parse_checkerboard, add_common_args
+from tool_base import parse_checkerboard, add_common_args, get_capture_config
 from threaded_capture import ThreadedCapture
 
 
-
 def parse_args():
-
     arg_parser = argparse.ArgumentParser()
 
     add_common_args(arg_parser)
@@ -24,8 +22,10 @@ def parse_args():
         help="directory where images are going to be stored/retrieved"
     )
 
-
     args = arg_parser.parse_args()
+
+    if not args.video and not args.config:
+        raise Exception("must specify either video or config")
 
     # parse checkerboard
     args.checkerboard = parse_checkerboard(args.checkerboard)
@@ -202,31 +202,12 @@ def make_dirs(args):
             os.makedirs(d)
 
 
-def get_capture_config(args):
-
-    ret = CaptureConfig()
-    video = args.video
-    if isinstance(video, str):
-
-        if str.isdigit(video):
-            device = int(video)
-
-        elif video.endswith(".yaml"):
-            # it is a configuration file
-            parsed = yaml.parse(video)
-
-            device = parsed["device"]
-
-        else:
-            device = video
-
-        ret = CaptureConfig(device)
-
-
 def start(args):
     make_dirs(args)
 
-    cfg = CaptureConfig(args.video)
+    # gets capture configuration
+    cfg = get_capture_config(args)
+
     cap = new_video_capture(cfg)
 
     th_cap = ThreadedCapture(cap)

@@ -3,11 +3,18 @@ import cv2
 import yaml
 
 FPS = 30
+
 CAPTURE_MODES = {
     'auto',
     'dshow',
     'any'
 }
+
+CAMERA_TYPES = {
+    'mono',
+    'stereo',
+}
+
 
 class SysInfo:
     def __init__(self):
@@ -70,6 +77,15 @@ def check_capture_mode(mode=None):
     return mode
 
 
+def check_camera_type(camera_type=None):
+    if not camera_type:
+        camera_type = 'mono'
+    if camera_type not in CAMERA_TYPES:
+        raise Exception(f"camera type '{camera_type}' not valid.")
+
+    return camera_type
+
+
 class CaptureConfig:
 
     def __init__(
@@ -82,8 +98,9 @@ class CaptureConfig:
             name=None,
             threaded=None,
             camera_type=None
+
     ):
-        self.source = check_video(video)
+        self.video = check_video(video)
         self.resolution, self.resolutions = check_resolutions(resolution, resolutions)
         self.name = name
 
@@ -93,20 +110,26 @@ class CaptureConfig:
         self.camera_type = camera_type
 
     def __str__(self):
-        ret = f"source: {self.source}; "
+        ret = f"source: {self.video}; "
         if self.resolution is not None:
             ret += f"resolution: {self.resolution};"
 
         return ret
 
-    def set_source(self, source):
-        self.source = check_video(source)
+    def set_video(self, video):
+        self.video = check_video(video)
 
     def set_resolution(self, resolution):
         self.resolution = check_resolution(resolution, self.resolutions)
 
+    def set_resolutions(self, resolution, resolutions):
+        self.resolution, self.resolutions = check_resolutions(resolution, resolutions)
+
     def set_capture_mode(self, capture_mode):
         self.capture_mode = check_capture_mode(capture_mode)
+
+    def set_camera_type(self, camera_type):
+        self.camera_type = check_camera_type(camera_type)
 
 
 def from_yaml(file):
@@ -119,28 +142,45 @@ def from_yaml(file):
         video
     )
 
-    ret.name = parsed.get("name")
-    ret.resolution = parsed.get("resolution")
-    ret.resolutions = parsed.get("resolutions")
-    ret.mode = parsed.get("mode", 'auto')
-    ret.threaded = parsed.get("threaded", True)
-    ret.fps = parsed.get("fps")
+    name = parsed.get("name")
+    resolution = parsed.get("resolution")
+    resolutions = parsed.get("resolutions")
+    fps = parsed.get("fps")
+    capture_mode = parsed.get("capture_mode")
+    threaded = parsed.get("threaded", True)
+    camera_type = parsed.get("camera_type", 'mono')
+
+    ret.set_resolutions(resolution, resolutions)
+    ret.set_capture_mode(capture_mode)
+    ret.set_camera_type(camera_type)
+    ret.name = name
+    ret.fps = fps
+    ret.threaded = threaded
 
     return ret
 
 
 def new_video_capture(config: CaptureConfig):
-    device = config.source
+    device = config.video
     resolution = config.resolution
-    mode = config.capture_mode
 
     print(f"starting video capture: {config}")
 
+    if config.capture_mode == 'auto':
+        info = SysInfo()
+        mode = guess_capture_mode(info)
+    elif config.capture_mode == 'dshow':
+        mode = cv2.CAP_DSHOW
+    else:
+        mode = cv2.CAP_ANY
+
     cap = cv2.VideoCapture(device, mode)
     cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
-    cap.set(cv2.CAP_PROP_FPS, FPS)
 
-    if resolution is not None:
+    if config.fps:
+        cap.set(cv2.CAP_PROP_FPS, FPS)
+
+    if config.resolution is not None:
         req_w, req_h = resolution
         cap.set(cv2.CAP_PROP_FRAME_WIDTH, req_w)
         cap.set(cv2.CAP_PROP_FRAME_HEIGHT, req_h)

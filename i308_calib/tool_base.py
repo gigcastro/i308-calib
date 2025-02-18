@@ -9,7 +9,7 @@ def add_common_args(arg_parser):
 
     arg_parser.add_argument(
         "-cfg", "--config",
-        default="cfg/default.yaml",
+        default=None,
         help="capture configuration file (.yaml)"
     )
 
@@ -55,7 +55,7 @@ def get_capture_config(
 
     if args.video:
         # Overrides config with args
-        ret.set_source(args.video)
+        ret.set_video(args.video)
 
     if args.resolution:
         # Overrides config with args

@@ -26,9 +26,6 @@ def parse_args():
 
     # parse checkerboard
     args.checkerboard = parse_checkerboard(args.checkerboard)
-
-    #     args.resolution = stereo_camera.SUPPORTED_RESOLUTIONS[args.resolution]
-    #     args.video = int(args.video)
     #     args.square_size = float(args.square_size)
 
     return args

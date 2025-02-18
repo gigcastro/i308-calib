@@ -5,11 +5,11 @@ name: Default
 # capture_mode: 'auto'
 
 # requested resolution
-# resolution: 1920x1080
+# resolution: 640x480
 
 # available resolution
 #resolutions:
-#  - 1920x1080
+#  - 640x480
 #  - 1280x720
 
 # threaded, if True the captures are made in a separate thread preventing gui from block
