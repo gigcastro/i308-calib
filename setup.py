@@ -14,8 +14,9 @@ setup(
 
     entry_points={
         'console_scripts': [
-            'calib = i308_calib.tool_mono:run',
-            'calib-stereo = i308_calib.tool_stereo:run',
+            'copy-configs = i308_calib.copy_configs:run',
+            'calib-tool = i308_calib.calib.tool_calib:run',
+            'calib-stereo = i308_calib.calib.tool_stereo:run',
         ],
     },
     author="Esteban Uriza",

@@ -4,11 +4,13 @@ import cv2
 
 import glob
 
-from i308_calib import calib
-from i308_calib.capture import new_video_capture
-from i308_calib.calib_set import CalibSet
-from i308_calib.tool_base import parse_checkerboard, add_common_args, get_capture_config
-from i308_calib.threaded_capture import ThreadedCapture
+from i308_calib.calib import calib_utils
+from i308_calib.calib.calib_set import CalibSet
+from i308_calib.calib.tool_base import add_common_args, parse_checkerboard
+from i308_calib.capture import config
+
+from i308_calib.capture.config import add_capture_args
+from i308_calib.capture.threaded_capture import ThreadedCapture
 
 
 def parse_args():
@@ -33,6 +35,7 @@ def parse_args():
         formatter_class=argparse.RawTextHelpFormatter
     )
 
+    add_capture_args(arg_parser)
     add_common_args(arg_parser)
 
     arg_parser.add_argument(
@@ -79,7 +82,7 @@ def detect_checkerboard(args, image):
     else:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
-    found, corners = calib.detect_board(
+    found, corners = calib_utils.detect_board(
         checkerboard,
         gray
     )
@@ -142,11 +145,11 @@ def calibrate(args, cs: CalibSet):
     )
 
     print("# Camera matrix : \n")
-    print("K = ", calib.np_print(K))
+    print("K = ", calib_utils.np_print(K))
     print()
 
     print("# Distortion Coefficients : \n")
-    print("dist = ", calib.np_print(dist))
+    print("dist = ", calib_utils.np_print(dist))
     print()
 
 
@@ -154,7 +157,7 @@ def load_calib_set(
         args
 ):
     checkerboard = args.checkerboard
-    checkerboard_world_points = args.square_size * calib.board_points(checkerboard)
+    checkerboard_world_points = args.square_size * calib_utils.board_points(checkerboard)
 
     calib_set = CalibSet()
 
@@ -225,9 +228,9 @@ def start(args):
     make_dirs(args)
 
     # gets capture configuration
-    cfg = get_capture_config(args)
+    cfg = config.get_capture_config(args)
 
-    cap = new_video_capture(cfg)
+    cap = config.new_video_capture(cfg)
 
     th_cap = ThreadedCapture(cap)
     th_cap.start()
@@ -235,7 +238,7 @@ def start(args):
     print("Checkerboard: ", args.checkerboard)
     print("Square Size: ", args.square_size)
 
-    object_points = calib.board_points(args.checkerboard)
+    object_points = calib_utils.board_points(args.checkerboard)
     detection_enabled = False
     detection = None
 
@@ -270,7 +273,7 @@ def start(args):
 
             found = detection['found']
             if found:
-                show_img = calib.draw_checkerboard(
+                show_img = calib_utils.draw_checkerboard(
                     show_img,
                     args.checkerboard,
                     detection['corners'],

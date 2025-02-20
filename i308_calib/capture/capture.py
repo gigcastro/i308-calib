@@ -2,8 +2,6 @@ import platform
 import cv2
 import yaml
 
-FPS = 30
-
 CAPTURE_MODES = {
     'auto',
     'dshow',
@@ -20,13 +18,6 @@ class SysInfo:
     def __init__(self):
         self.os_platform = platform.platform()
         self.os_system = platform.system()
-
-
-def guess_capture_mode(sys_info: SysInfo) -> str:
-    mode = cv2.CAP_ANY
-    if sys_info.os_system == 'Windows':
-        mode = cv2.CAP_DSHOW
-    return mode
 
 
 def check_video(source):
@@ -160,6 +151,41 @@ def from_yaml(file):
     return ret
 
 
+# def to_yaml(config: CaptureConfig, file=None):
+#     """
+#     Serializes the CaptureConfig object to a YAML string or file.
+#
+#     Args:
+#         file (str, optional): If provided, the YAML will be written to this file.
+#
+#     Returns:
+#         str: YAML string if `file` is None, otherwise None.
+#     """
+#     data = {
+#         "video": config.video,
+#         "resolution": config.resolution,
+#         "resolutions": config.resolutions,
+#         "fps": config.fps,
+#         "capture_mode": config.capture_mode,
+#         "name": config.name,
+#         "threaded": config.threaded,
+#         "camera_type": config.camera_type,
+#     }
+#
+#     if file:
+#         with open(file, 'w') as f:
+#             yaml.safe_dump(data, f)
+#     else:
+#         return yaml.safe_dump(data)
+
+
+def guess_capture_mode(sys_info: SysInfo) -> str:
+    mode = cv2.CAP_ANY
+    if sys_info.os_system == 'Windows':
+        mode = cv2.CAP_DSHOW
+    return mode
+
+
 def new_video_capture(config: CaptureConfig):
     device = config.video
     resolution = config.resolution
@@ -178,7 +204,7 @@ def new_video_capture(config: CaptureConfig):
     cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
 
     if config.fps:
-        cap.set(cv2.CAP_PROP_FPS, FPS)
+        cap.set(cv2.CAP_PROP_FPS, config.fps)
 
     if config.resolution is not None:
         req_w, req_h = resolution
@@ -189,3 +215,52 @@ def new_video_capture(config: CaptureConfig):
         raise Exception("Cannot open capture")
 
     return cap
+
+
+def get_capture_config(
+    args
+) -> CaptureConfig:
+
+    video = args.video
+    config = args.config
+
+    if config is not None:
+        ret = from_yaml(config)
+
+    else:
+
+        ret = CaptureConfig(video)
+
+    if args.video:
+        # Overrides config with args
+        ret.set_video(args.video)
+
+    if args.resolution:
+        # Overrides config with args
+        ret.set_resolution(args.resolution)
+
+    return ret
+
+
+def add_capture_args(arg_parser):
+
+    arg_parser.add_argument(
+        "-cfg", "--config",
+        default=None,
+        help="capture configuration file (.yaml)"
+    )
+
+    arg_parser.add_argument(
+        "-v", "--video",
+        default=None,
+        help="video device to be opened for calibration eg. 0"
+    )
+
+    arg_parser.add_argument(
+        "-r", "--resolution",
+        default=None,
+        help=f"requested resolution. "
+    )
+
+    return arg_parser
+

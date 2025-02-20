@@ -1,16 +1,28 @@
+# video device, on linux might be /dev/video<N>
 video: 0
-name: Default
 
-# mode can be 'auto', 'any' or 'dshow'
+# name: str (optional)
+#   a name to identify the device
+# name: My Cute Camera
+
+# capture_mode: str (optional), default='auto', in ['auto', 'any', 'dshow']
+#   if auto, will try to use the best configuration mode
 # capture_mode: 'auto'
 
-# requested resolution
+# resolution: str (optional)
+#   requested resolution in the format "<width>x<height>" in pixels
 # resolution: 640x480
 
-# available resolution
-#resolutions:
+# resolutions: list of str, (optional)
+#   available resolutions for this camera
+# resolutions:
 #  - 640x480
 #  - 1280x720
 
-# threaded, if True the captures are made in a separate thread preventing gui from block
+# threaded: bool (optional) default=True,
+#   if True the captures are made in a separate thread preventing GUI from blocking
 # threaded: False
+
+# camera_type: str (optional), default='mono', in ['mono', 'stereo']
+#   if 'stereo' requested resolution width is twice the specified.
+# camera_type: 'mono'

@@ -1,7 +1,8 @@
 video: 0
 name: Stereo ELP-USB3D1080P02
-stereo: True
+camera_type: 'stereo'
 capture_mode: 'auto'
+resolution: 1920x1080
 resolutions:
   - 1920x1080
   - 1280x720
