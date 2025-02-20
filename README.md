@@ -9,9 +9,11 @@ Can be installed via pip:
     pip install -qq git+https://github.com/udesa-vision/i308-calib.git
 
 
-## Quick Start
+## Camera Calibration
 
-After installing you should be able to run the cli command calibration tool:
+### Quick Start
+
+run the monocular calibration tool cli command:
 
     calib-tool
 
@@ -51,7 +53,7 @@ calibrate with capture configuration file:
 
 
 
-## Capture Configuration File
+### Configuration File
 
 Some configuration files are provided.
 
@@ -62,7 +64,6 @@ In order to copy the configuration files to the working directory run the comman
  copy-configs
 
 ```
-
 
 This should create the folder `cfg/` with some configuration files.
 
@@ -92,3 +93,40 @@ For example, the following command will use the configuration file but in the vi
 
     calib --video 3 --config cfg/capture.yaml 
 
+
+## Stereo Calibration
+
+run the stereo calibration tool cli command:
+
+```bash
+    calib-stereo
+```
+
+You can use the same arguments of the monocular tool for the stereo tool, for example:
+
+```bash
+
+    calib-stereo --video /dev/video3 --resolution 1280x480 --checkerboard 9x6 --square-size 32.0 --data data/stereo
+
+```
+
+### Configuration file
+A configuration file for the Stereo camera ELP-USB3D1080P02 is provided.
+
+To get the configuration files, run the command:
+
+```bash
+
+ copy-configs
+
+```
+
+And then edit in `cfg/stereo.yaml` and then ddapt it to your needs.
+
+After that you can run the stereo tool using that configuration file:
+
+```bash
+
+    calib-stereo --config cfg/stereo.yaml
+
+```
