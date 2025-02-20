@@ -16,6 +16,7 @@ def detect_checkerboard(args, image):
     else:
         gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
 
+    # if the image is large we optimize
     w, h = shape[1], shape[0]
     if w < 1080:
         scale = 1.0
