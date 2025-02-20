@@ -55,15 +55,24 @@ def draw_checkerboard(
     return image
 
 
-def detect_board(CHECKERBOARD, gray, criteria=None, subpix_win=(11, 11)):
+def detect_board(
+    CHECKERBOARD,
+    gray,
+    criteria=None,
+    subpix_win=(11, 11),
+    scale=1.0
+):
 
-    # shape = gray.shape[::-1]
-    # gray = cv2.blur(gray, (5, 5))
+    if scale == 1.0:
+        use_image = gray
+    else:
+        w, h = gray.shape[1], gray.shape[0]
+        use_image = cv2.resize(gray, (int(w * scale), int(h * scale)))
 
     # Find the chess board corners
     # If desired number of corners are found in the image then ret = true
     ret, corners = cv2.findChessboardCorners(
-        gray,
+        use_image,
         CHECKERBOARD,
         cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE
     )
@@ -74,6 +83,9 @@ def detect_board(CHECKERBOARD, gray, criteria=None, subpix_win=(11, 11)):
         # objpoints.append(objp)
         if criteria is None:
             criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
+
+        if scale != 1.0:
+            corners /= scale
 
         # refining pixel coordinates for given 2d points.
         corners = cv2.cornerSubPix(gray, corners, subpix_win, (-1, -1), criteria)

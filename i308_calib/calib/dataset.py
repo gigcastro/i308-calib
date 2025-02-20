@@ -1,4 +1,4 @@
-class CalibSet:
+class Dataset:
 
     def __init__(self):
 
@@ -8,10 +8,10 @@ class CalibSet:
         self.image_points = []
 
     def add(
-        self,
-        image,
-        object_points,
-        image_points
+            self,
+            image,
+            object_points,
+            image_points
     ):
 
         w, h = image.shape[1], image.shape[0]
@@ -25,5 +25,24 @@ class CalibSet:
 
         self.object_points.append(object_points)
         self.image_points.append(image_points)
+        self.image_number += 1
+        return self.image_number
+
+
+class StereoDataset:
+
+    def __init__(self):
+        self.image_number = 0
+        self.left = Dataset()
+        self.right = Dataset()
+
+    def add(
+            self,
+            left,
+            right
+    ):
+        self.left.add(*left)
+        self.right.add(*right)
+
         self.image_number += 1
         return self.image_number

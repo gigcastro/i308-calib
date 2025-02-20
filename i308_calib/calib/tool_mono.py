@@ -5,8 +5,8 @@ import cv2
 import glob
 
 from i308_calib.calib import calib_utils
-from i308_calib.calib.calib_set import CalibSet
-from i308_calib.calib.tool_base import add_common_args, parse_checkerboard
+from i308_calib.calib.dataset import Dataset
+from i308_calib.calib.tool_base import add_common_args, parse_checkerboard, detect_checkerboard
 
 from i308_calib import capture
 from i308_calib.capture import get_capture_config, new_video_capture, ThreadedCapture
@@ -71,30 +71,6 @@ def save_capture(
     )
 
 
-def detect_checkerboard(args, image):
-    checkerboard = args.checkerboard
-
-    # 1. convert image to grayscale
-    shape = image.shape
-    if len(shape) == 2:
-        gray = image
-    else:
-        gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-
-    found, corners = calib_utils.detect_board(
-        checkerboard,
-        gray
-    )
-
-    detection = {
-        "found": found,
-        "corners": corners,
-        "image": image.copy()
-    }
-
-    return detection
-
-
 def add_detection(
         args,
         object_points,
@@ -129,7 +105,7 @@ def add_detection(
             )
 
 
-def calibrate(args, cs: CalibSet):
+def calibrate(args, cs: Dataset):
     object_points = cs.object_points
     image_points = cs.image_points
     img_shape = cs.image_shape
@@ -158,7 +134,7 @@ def load_calib_set(
     checkerboard = args.checkerboard
     checkerboard_world_points = args.square_size * calib_utils.board_points(checkerboard)
 
-    calib_set = CalibSet()
+    calib_set = Dataset()
 
     directory = os.path.join(args.data, "calib")
     files_pattern = "*.jpg"
@@ -231,9 +207,6 @@ def start(args):
 
     cap = new_video_capture(cfg)
 
-    th_cap = ThreadedCapture(cap)
-    th_cap.start()
-
     print("Checkerboard: ", args.checkerboard)
     print("Square Size: ", args.square_size)
 
@@ -241,14 +214,14 @@ def start(args):
     detection_enabled = False
     detection = None
 
-    calib_set = CalibSet()
+    calib_set = Dataset()
 
     draw_corners = True
     capture = 0
 
     while True:
         # Capture frame-by-frame
-        ret, frame = th_cap.read()
+        ret, frame = cap.read()
 
         # if frame is read correctly ret is True
         if not ret:
@@ -362,7 +335,6 @@ def start(args):
             calib_set = load_calib_set(args)
 
     # When everything done, release the capture
-    th_cap.stop()
     cap.release()
     cv2.destroyAllWindows()
 

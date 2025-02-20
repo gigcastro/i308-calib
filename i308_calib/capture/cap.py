@@ -2,16 +2,18 @@ import platform
 import cv2
 import yaml
 
+from i308_calib.capture import ThreadedCapture
+
 CAPTURE_MODES = {
     'auto',
     'dshow',
     'any'
 }
 
-CAMERA_TYPES = {
-    'mono',
-    'stereo',
-}
+# CAMERA_TYPES = {
+#     'mono',
+#     'stereo',
+# }
 
 
 class SysInfo:
@@ -68,13 +70,13 @@ def check_capture_mode(mode=None):
     return mode
 
 
-def check_camera_type(camera_type=None):
-    if not camera_type:
-        camera_type = 'mono'
-    if camera_type not in CAMERA_TYPES:
-        raise Exception(f"camera type '{camera_type}' not valid.")
-
-    return camera_type
+# def check_camera_type(camera_type=None):
+#     if not camera_type:
+#         camera_type = 'mono'
+#     if camera_type not in CAMERA_TYPES:
+#         raise Exception(f"camera type '{camera_type}' not valid.")
+#
+#     return camera_type
 
 
 class CaptureConfig:
@@ -88,7 +90,7 @@ class CaptureConfig:
             capture_mode=None,
             name=None,
             threaded=None,
-            camera_type=None
+            # camera_type=None
 
     ):
         self.video = check_video(video)
@@ -98,7 +100,7 @@ class CaptureConfig:
         self.fps = fps
         self.capture_mode = check_capture_mode(capture_mode)
         self.threaded = threaded
-        self.camera_type = camera_type
+        # self.camera_type = camera_type
 
     def __str__(self):
         ret = f"source: {self.video}; "
@@ -119,8 +121,8 @@ class CaptureConfig:
     def set_capture_mode(self, capture_mode):
         self.capture_mode = check_capture_mode(capture_mode)
 
-    def set_camera_type(self, camera_type):
-        self.camera_type = check_camera_type(camera_type)
+    # def set_camera_type(self, camera_type):
+    #     self.camera_type = check_camera_type(camera_type)
 
 
 def from_yaml(file):
@@ -139,11 +141,11 @@ def from_yaml(file):
     fps = parsed.get("fps")
     capture_mode = parsed.get("capture_mode")
     threaded = parsed.get("threaded", True)
-    camera_type = parsed.get("camera_type", 'mono')
+    # camera_type = parsed.get("camera_type", 'mono')
 
     ret.set_resolutions(resolution, resolutions)
     ret.set_capture_mode(capture_mode)
-    ret.set_camera_type(camera_type)
+    # ret.set_camera_type(camera_type)
     ret.name = name
     ret.fps = fps
     ret.threaded = threaded
@@ -201,7 +203,7 @@ def new_video_capture(config: CaptureConfig):
         mode = cv2.CAP_ANY
 
     cap = cv2.VideoCapture(device, mode)
-    cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+    # cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
 
     if config.fps:
         cap.set(cv2.CAP_PROP_FPS, config.fps)
@@ -213,6 +215,12 @@ def new_video_capture(config: CaptureConfig):
 
     if not cap.isOpened():
         raise Exception("Cannot open capture")
+
+    if config.threaded:
+        th_cap = ThreadedCapture(cap)
+        th_cap.start()
+
+        cap = th_cap
 
     return cap
 

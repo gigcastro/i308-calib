@@ -1,3 +1,5 @@
+from .threaded_capture import ThreadedCapture
+
 from .cap import (
     SysInfo,
     CaptureConfig,
@@ -6,4 +8,4 @@ from .cap import (
     new_video_capture,
 )
 
-from .threaded_capture import ThreadedCapture
+
