@@ -351,7 +351,10 @@ def start(args):
     cv2.destroyAllWindows()
 
 
-if __name__ == '__main__':
+def run():
     args = parse_args()
-
     start(args)
+
+
+if __name__ == '__main__':
+    run()
