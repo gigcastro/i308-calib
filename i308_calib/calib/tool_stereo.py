@@ -212,7 +212,7 @@ def calibrate_stereo(
     return calibration_results
 
 
-def create_stereo_rectifying_maps(calibration_results):
+def create_stereo_rectifying_maps(args, calibration_results):
     left_K = calibration_results['left_K']
     left_dist = calibration_results['left_dist']
     right_K = calibration_results['right_K']
@@ -519,7 +519,7 @@ def start(args):
                     print("can't create rectification maps, first calibrate stereo.")
                 else:
                     print(f"creating rectification maps...")
-                    create_stereo_rectifying_maps(calibration_results)
+                    create_stereo_rectifying_maps(args, calibration_results)
 
             elif k == ord('s'):
 
