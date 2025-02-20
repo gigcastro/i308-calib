@@ -51,3 +51,37 @@ calibrate with capture configuration file:
 
 
 
+## Capture Configuration File
+
+Some configuration files are provided.
+
+In order to copy the configuration files to the working directory run the command:
+
+```bash
+
+ copy-configs
+
+```
+
+
+This should create the folder `cfg/` with some configuration files.
+
+Example of capture configuration file (.yaml):
+
+```yaml
+
+    # video device, on linux might be /dev/video<N>
+    video: 0
+
+    # name: str (optional)
+    #   a name to identify the device
+    name: My Cute Camera
+
+    # resolution: str (optional)
+    #   requested resolution in the format "<width>x<height>" in pixels
+    resolution: 640x480
+
+
+```
+
+
