@@ -6,7 +6,8 @@ setup(
     packages=find_packages(),
     install_requires=[
         "opencv-python",
-        "matplotlib"
+        "matplotlib",
+        "pyyaml"
     ],
     entry_points={
         'console_scripts': [
