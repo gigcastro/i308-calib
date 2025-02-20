@@ -85,3 +85,10 @@ Example of capture configuration file (.yaml):
 ```
 
 
+### Overwriting configuration parameters
+Some configuration file parameters can be overwritten with command line arguments.
+
+For example, the following command will use the configuration file but in the video 3.
+
+    calib --video 3 --config cfg/capture.yaml 
+
