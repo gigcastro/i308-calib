@@ -7,10 +7,9 @@ import glob
 from i308_calib.calib import calib_utils
 from i308_calib.calib.calib_set import CalibSet
 from i308_calib.calib.tool_base import add_common_args, parse_checkerboard
-from i308_calib.capture import config
 
-from i308_calib.capture.config import add_capture_args
-from i308_calib.capture.threaded_capture import ThreadedCapture
+from i308_calib import capture
+from i308_calib.capture import get_capture_config, new_video_capture, ThreadedCapture
 
 
 def parse_args():
@@ -35,7 +34,7 @@ def parse_args():
         formatter_class=argparse.RawTextHelpFormatter
     )
 
-    add_capture_args(arg_parser)
+    capture.add_capture_args(arg_parser)
     add_common_args(arg_parser)
 
     arg_parser.add_argument(
@@ -228,9 +227,9 @@ def start(args):
     make_dirs(args)
 
     # gets capture configuration
-    cfg = config.get_capture_config(args)
+    cfg = get_capture_config(args)
 
-    cap = config.new_video_capture(cfg)
+    cap = new_video_capture(cfg)
 
     th_cap = ThreadedCapture(cap)
     th_cap.start()

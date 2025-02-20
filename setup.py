@@ -15,7 +15,7 @@ setup(
     entry_points={
         'console_scripts': [
             'copy-configs = i308_calib.copy_configs:run',
-            'calib-tool = i308_calib.calib.tool_calib:run',
+            'calib-tool = i308_calib.calib.tool_mono:run',
             'calib-stereo = i308_calib.calib.tool_stereo:run',
         ],
     },
