@@ -1,14 +1,14 @@
 import argparse
 import os
 import cv2
-import yaml
 
-import calib
 import glob
-from capture import new_video_capture, CaptureConfig
-from calib_set import CalibSet
-from tool_base import parse_checkerboard, add_common_args, get_capture_config
-from threaded_capture import ThreadedCapture
+from capture import new_video_capture
+
+
+from i308_calib.calib_set import CalibSet
+from i308_calib.tool_base import parse_checkerboard, add_common_args, get_capture_config
+from i308_calib.threaded_capture import ThreadedCapture
 
 
 def parse_args():

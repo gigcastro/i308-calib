@@ -1,4 +1,4 @@
-from capture import CaptureConfig, from_yaml
+from i308_calib.capture import CaptureConfig, from_yaml
 
 
 def parse_checkerboard(checkerboard):
