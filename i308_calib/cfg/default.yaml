@@ -23,6 +23,12 @@ video: 0
 #   if True the captures are made in a separate thread preventing GUI from blocking
 # threaded: False
 
-# camera_type: str (optional), default='mono', in ['mono', 'stereo']
-#   if 'stereo' requested resolution width is twice the specified.
-# camera_type: 'mono'
+# compression: str (optional), default=None, in [
+#    'XVID', # "XviD MPEG-4",
+#    'MJPG', "Motion JPEG",
+#    'H264': "H.264 / AVC",
+#    'DIVX': "DivX MPEG-4",
+#    'MP4V': "MPEG-4 Video",
+#    'I420': "Uncompressed YUV format"
+# ]
+# compression: 'MJPG'

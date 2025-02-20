@@ -15,6 +15,16 @@ CAPTURE_MODES = {
 #     'stereo',
 # }
 
+COMPRESSION = {
+    'XVID': "XviD MPEG-4",
+    'MJPG': "Motion JPEG",
+    'H264': "H.264 / AVC",
+    'DIVX': "DivX MPEG-4",
+    'MP4V': "MPEG-4 Video",
+    'I420': "Uncompressed YUV format"
+}
+
+
 
 class SysInfo:
     def __init__(self):
@@ -70,13 +80,16 @@ def check_capture_mode(mode=None):
     return mode
 
 
-# def check_camera_type(camera_type=None):
-#     if not camera_type:
-#         camera_type = 'mono'
-#     if camera_type not in CAMERA_TYPES:
-#         raise Exception(f"camera type '{camera_type}' not valid.")
-#
-#     return camera_type
+def check_compression(compression=None):
+
+    if not compression:
+        return None
+
+    compression = compression.upper()
+    if compression not in COMPRESSION:
+        raise Exception(f"compression type '{compression}' not valid.")
+
+    return compression
 
 
 class CaptureConfig:
@@ -90,7 +103,7 @@ class CaptureConfig:
             capture_mode=None,
             name=None,
             threaded=None,
-            # camera_type=None
+            compression=None
 
     ):
         self.video = check_video(video)
@@ -100,7 +113,7 @@ class CaptureConfig:
         self.fps = fps
         self.capture_mode = check_capture_mode(capture_mode)
         self.threaded = threaded
-        # self.camera_type = camera_type
+        self.compression = check_compression(compression)
 
     def __str__(self):
         ret = f"source: {self.video}; "
@@ -121,8 +134,8 @@ class CaptureConfig:
     def set_capture_mode(self, capture_mode):
         self.capture_mode = check_capture_mode(capture_mode)
 
-    # def set_camera_type(self, camera_type):
-    #     self.camera_type = check_camera_type(camera_type)
+    def set_compression(self, camera_type):
+        self.compression = check_compression(camera_type)
 
 
 def from_yaml(file):
@@ -141,11 +154,11 @@ def from_yaml(file):
     fps = parsed.get("fps")
     capture_mode = parsed.get("capture_mode")
     threaded = parsed.get("threaded", True)
-    # camera_type = parsed.get("camera_type", 'mono')
+    compression = parsed.get("compression")
 
     ret.set_resolutions(resolution, resolutions)
     ret.set_capture_mode(capture_mode)
-    # ret.set_camera_type(camera_type)
+    ret.set_compression(compression)
     ret.name = name
     ret.fps = fps
     ret.threaded = threaded
@@ -182,9 +195,10 @@ def from_yaml(file):
 
 
 def guess_capture_mode(sys_info: SysInfo) -> str:
-    mode = cv2.CAP_ANY
-    if sys_info.os_system == 'Windows':
-        mode = cv2.CAP_DSHOW
+    if sys_info.os_platform == "Windows":
+        mode = "dshow"
+    else:
+        mode = "any"
     return mode
 
 
@@ -194,16 +208,21 @@ def new_video_capture(config: CaptureConfig):
 
     print(f"starting video capture: {config}")
 
-    if config.capture_mode == 'auto':
+    mode = config.capture_mode
+    if mode == 'auto':
         info = SysInfo()
         mode = guess_capture_mode(info)
-    elif config.capture_mode == 'dshow':
+    print(f"capture engine: {mode}")
+    if mode == 'dshow':
         mode = cv2.CAP_DSHOW
     else:
         mode = cv2.CAP_ANY
 
     cap = cv2.VideoCapture(device, mode)
-    # cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc(*"MJPG"))
+    if config.compression:
+        print(f"compression: {config.compression}")
+        four_cc = cv2.VideoWriter_fourcc(*config.compression)
+        cap.set(cv2.CAP_PROP_FOURCC, four_cc)
 
     if config.fps:
         cap.set(cv2.CAP_PROP_FPS, config.fps)
