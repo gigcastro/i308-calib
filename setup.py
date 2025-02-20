@@ -10,7 +10,7 @@ setup(
     ],
     entry_points={
         'console_scripts': [
-            'calib-mono = i308_calib.tool_mono:run',
+            'calib = i308_calib.tool_mono:run',
             'calib-stereo = i308_calib.tool_stereo:run',
         ],
     },
