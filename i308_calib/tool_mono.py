@@ -12,7 +12,26 @@ from i308_calib.threaded_capture import ThreadedCapture
 
 
 def parse_args():
-    arg_parser = argparse.ArgumentParser()
+    epilog = """
+        
+        Examples:
+        
+            # calibrate camera 0 with default parameters
+            calib --video 0
+        
+            # calibrate the camera /dev/video3 specifying some parameters
+            calib --video /dev/video3 --resolution 640x480 --checkerboard 9x6 --square-size 32.0 --data data_dir
+                
+            # using a capture configuration file
+            calib --config cam_config.yaml 
+        
+    """
+
+    arg_parser = argparse.ArgumentParser(
+        description="Camera calibration tool.",
+        epilog=epilog,
+        formatter_class=argparse.RawTextHelpFormatter
+    )
 
     add_common_args(arg_parser)
 
@@ -286,11 +305,6 @@ def start(args):
                     performs the camera calibration,.
                     the calibration set must have at least 10 detected checkerboards.
                     calibration results are stored into a pickle file: calibration.pkl
-
-                m: rectification maps, 
-                    Crea los mapas de rectification tanto de corrección de distorsión para cada lente,
-                    cómo los mapas de rectificación estéreo.
-                    Guarda los mapas de rectificación en el archivo pickle stereo_calibration.pkl
 
                 s: snapshot, 
                     captures the current frame and stores it into the captures directory

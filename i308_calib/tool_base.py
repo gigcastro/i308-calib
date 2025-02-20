@@ -22,14 +22,14 @@ def add_common_args(arg_parser):
     arg_parser.add_argument(
         "-c", "--checkerboard",
         default='10x7',
-        help="checkerboard eg. '7x10'"
+        help="checkerboard squares layout (default '10x7')"
     )
 
     arg_parser.add_argument(
         "-sq", "--square-size",
         type=float,
         default=24.2,
-        help="checkerboard square size eg. 24.2"
+        help="checkerboard square size [mm], (default 24.2)"
     )
 
     arg_parser.add_argument(
