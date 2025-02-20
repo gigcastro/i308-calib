@@ -7,7 +7,11 @@ import pkg_resources
 def copy_configs(args):
     """Copy bundled config files to the current directory."""
     config_dir = pkg_resources.resource_filename("i308_calib", "cfg")
-    dest_dir = args.target # os.getcwd()
+    dest_dir = args.target  # os.getcwd()
+
+    if dest_dir != "" and not os.path.isdir(dest_dir):
+        print("Creating destination directory {}".format(dest_dir))
+        os.makedirs(dest_dir)
 
     for filename in os.listdir(config_dir):
         src = os.path.join(config_dir, filename)
