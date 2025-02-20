@@ -9,6 +9,7 @@ setup(
         "matplotlib",
         "pyyaml"
     ],
+    package_data={"i308-calib": ["cfg/*.yaml"]},
     entry_points={
         'console_scripts': [
             'calib = i308_calib.tool_mono:run',
