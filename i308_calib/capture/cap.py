@@ -249,6 +249,8 @@ def new_video_capture(config: CaptureConfig):
     if not cap.isOpened():
         raise Exception("Cannot open capture")
 
+    cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
     if config.threaded:
         print("capturing is threaded")
         th_cap = ThreadedCapture(cap)
