@@ -250,6 +250,7 @@ def new_video_capture(config: CaptureConfig):
         raise Exception("Cannot open capture")
 
     if config.threaded:
+        print("capturing is threaded")
         th_cap = ThreadedCapture(cap)
         th_cap.start()
 
