@@ -25,7 +25,6 @@ COMPRESSION = {
 }
 
 
-
 class SysInfo:
     def __init__(self):
         self.os_platform = platform.platform()
@@ -81,7 +80,6 @@ def check_capture_mode(mode=None):
 
 
 def check_compression(compression=None):
-
     if not compression:
         return None
 
@@ -90,6 +88,19 @@ def check_compression(compression=None):
         raise Exception(f"compression type '{compression}' not valid.")
 
     return compression
+
+
+def check_threaded(threaded=None):
+    ret = True
+    if not threaded:
+        return ret
+
+    if isinstance(threaded, str):
+        ret = threaded.lower()
+        if ret == "false":
+            ret = False
+
+    return ret
 
 
 class CaptureConfig:
@@ -136,6 +147,9 @@ class CaptureConfig:
 
     def set_compression(self, camera_type):
         self.compression = check_compression(camera_type)
+
+    def set_threaded(self, threaded):
+        self.threaded = check_threaded(threaded)
 
 
 def from_yaml(file):
@@ -245,17 +259,14 @@ def new_video_capture(config: CaptureConfig):
 
 
 def get_capture_config(
-    args
+        args
 ) -> CaptureConfig:
-
     video = args.video
     config = args.config
 
     if config is not None:
         ret = from_yaml(config)
-
     else:
-
         ret = CaptureConfig(video)
 
     if args.video:
@@ -266,11 +277,13 @@ def get_capture_config(
         # Overrides config with args
         ret.set_resolution(args.resolution)
 
+    if args.threaded:
+        ret.set_threaded(args.threaded)
+
     return ret
 
 
 def add_capture_args(arg_parser):
-
     arg_parser.add_argument(
         "-cfg", "--config",
         default=None,
@@ -289,5 +302,10 @@ def add_capture_args(arg_parser):
         help=f"requested resolution. "
     )
 
-    return arg_parser
+    arg_parser.add_argument(
+        "-t", "--threaded",
+        default=None,
+        help=f"capture in a separate thread. "
+    )
 
+    return arg_parser
