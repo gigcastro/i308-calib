@@ -86,41 +86,42 @@ def add_detection(
         detection_right,
         save=True
 ):
+
     if detection_left is None or detection_right is None:
         print("please enable detection using 'd' key")
+        return
 
-    elif not detection_left['found'] or not detection_right['found']:
+    left_found = detection_left['found']
+    right_found = detection_right['found']
+    if not left_found or not right_found:
 
         print("board was not found, cannot add image to dataset")
+        return
 
-    else:
+    left_image = detection_left["image"]
+    left_corners = detection_left["corners"]
+    left = (
+        left_image,
+        object_points,
+        left_corners,
+    )
 
-        left_image = detection_left["image"]
-        left_corners = detection_left["corners"]
+    right_image = detection_right["image"]
+    right_corners = detection_right["corners"]
+    right = (
+        right_image,
+        object_points,
+        right_corners,
+    )
 
-        left = (
-            left_image,
-            object_points,
-            left_corners,
-        )
+    image_no = dataset.add(
+        left,
+        right,
+    )
 
-        right_image = detection_right["image"]
-        right_corners = detection_left["corners"]
-
-        right = (
-            right_image,
-            object_points,
-            right_corners,
-        )
-
-        image_no = dataset.add(
-            left,
-            right,
-        )
-
-        if save:
-            save_capture(args, left_image, image_no, cam_name="left", dir="calib")
-            save_capture(args, right_image, image_no, cam_name="right", dir="calib")
+    if save:
+        save_capture(args, left_image, image_no, cam_name="left", dir="calib")
+        save_capture(args, right_image, image_no, cam_name="right", dir="calib")
 
 
 def calibrate_stereo(
@@ -290,6 +291,7 @@ def load_calib_set(
         if not left_detection["found"]:
             print("warning, left checkerboard was not found")
             continue
+
         right_detection = detect_checkerboard(args, right_image)
         if not right_detection["found"]:
             print("warning, right checkerboard was not found")
@@ -319,6 +321,25 @@ def make_dirs(args):
             os.makedirs(d)
 
 
+def draw_text(img, text,
+          font=cv2.FONT_HERSHEY_PLAIN,
+          pos=(0, 0),
+          font_scale=3,
+          font_thickness=2,
+          text_color=(0, 255, 0),
+          text_color_bg=(0, 0, 0)
+          ):
+
+    x, y = pos
+    text_size, _ = cv2.getTextSize(text, font, font_scale, font_thickness)
+    text_w, text_h = text_size
+    if text_color_bg:
+        cv2.rectangle(img, pos, (x + text_w, y + text_h), text_color_bg, -1)
+    cv2.putText(img, text, (x, y + text_h + font_scale - 1), font, font_scale, text_color, font_thickness)
+
+    return text_size
+
+
 def start(args):
     make_dirs(args)
 
@@ -339,6 +360,8 @@ def start(args):
     frame_no = 0
 
     calibration_results = None
+
+    show_cam_name = True
 
     # window_flags = cv2.WINDOW_NORMAL
     # window_flags = cv2.WINDOW_FREERATIO
@@ -380,11 +403,16 @@ def start(args):
             left_frame = frame[:, :int(w / 2), :]
             right_frame = frame[:, int(w / 2):, :]
 
+            if show_cam_name:
+                draw_text(left_frame, "left", font_scale=8, font_thickness=8, text_color_bg=None)
+                draw_text(right_frame, "right", font_scale=8, font_thickness=8, text_color_bg=None)
+
             # left_frame = cv2.rotate(left_frame, cv2.ROTATE_180)
             # right_frame = cv2.rotate(right_frame, cv2.ROTATE_180)
 
             show_img_left = left_frame.copy()
             show_img_right = right_frame.copy()
+
 
             # draws so-far detected corners
             if draw_corners:
@@ -423,9 +451,13 @@ def start(args):
                         found,
                     )
 
+
             # cv2.imshow('left', show_img_left)
             # cv2.imshow('right', show_img_right)
+
+            # show_img_left = np.zeros_like(show_img_left)
             show_img = np.hstack((show_img_left, show_img_right))
+
             show_img = cv2.resize(show_img, (int(w / 2), int(h / 2)))
             cv2.imshow("stereo", show_img)
 
@@ -532,6 +564,12 @@ def start(args):
 
                 print(f"loading calibration images:")
                 dataset = load_calib_set(args)
+
+            elif k == ord('?'):
+
+                print(f"toggle camera identification")
+                show_cam_name = not show_cam_name
+
 
     finally:
 

@@ -20,7 +20,7 @@ def detect_checkerboard(args, image):
     if w < 1080:
         scale = 1.0
     else:
-        scale = 0.5
+        scale = 1.0
 
     found, corners = calib_utils.detect_board(
         checkerboard,
