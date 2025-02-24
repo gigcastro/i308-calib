@@ -59,7 +59,7 @@ def detect_board(
     CHECKERBOARD,
     gray,
     criteria=None,
-    subpix_win=(11, 11),
+    subpix_win=(7, 7),
     scale=1.0
 ):
 
