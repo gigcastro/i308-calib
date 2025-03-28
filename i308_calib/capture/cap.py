@@ -105,9 +105,9 @@ def check_threaded(threaded=None):
 
 
 def check_crop(crop=None):
-    ret = True
+
     if not crop:
-        return ret
+        return None
 
     try:
 
@@ -296,6 +296,11 @@ def new_video_capture(config: CaptureConfig):
         th_cap.start()
 
         cap = th_cap
+
+    # get one frame
+    ret, frame = cap.read()
+    if ret:
+        print(f"Capture started with shape: {frame.shape}")
 
     return cap
 

@@ -11,6 +11,7 @@ video: 0
 
 # resolution: str (optional)
 #   requested resolution in the format "<width>x<height>" in pixels
+resolution: 3840x1080
 # resolution: 640x480
 
 # resolutions: list of str, (optional)
@@ -21,7 +22,7 @@ video: 0
 
 # crop: str (optional)
 #   requested crop in the format "<x_from>,<x_to>;<x_from>,<x_to>" in proportion
-# crop: 0, 0.5; 0, 1
+crop: 0, 0.5; 0, 1
 
 # threaded: bool (optional) default=True,
 #   if True the captures are made in a separate thread preventing GUI from blocking

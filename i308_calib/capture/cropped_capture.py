@@ -6,7 +6,9 @@ class CroppedCapture:
     def read(self):
         ret, frame = self.cap.read()
         if ret and self.crop:
-            x0, xf, y0, yf = self.crop
+            x, y = self.crop
+            x0, xf = x
+            y0, yf = y
 
             # Convert proportions to pixel coordinates
             h, w = frame.shape[:2]

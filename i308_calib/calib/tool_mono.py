@@ -334,6 +334,8 @@ def start(args):
             print(f"loading calibration images:")
             calib_set = load_calib_set(args)
 
+
+
     # When everything done, release the capture
     cap.release()
     cv2.destroyAllWindows()
