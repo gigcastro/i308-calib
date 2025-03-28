@@ -19,6 +19,10 @@ video: 0
 #  - 640x480
 #  - 1280x720
 
+# crop: str (optional)
+#   requested crop in the format "<x_from>,<x_to>;<x_from>,<x_to>" in pixels
+# resolution: 640x480
+
 # threaded: bool (optional) default=True,
 #   if True the captures are made in a separate thread preventing GUI from blocking
 # threaded: False

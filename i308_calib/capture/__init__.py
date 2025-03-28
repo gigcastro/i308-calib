@@ -1,4 +1,5 @@
 from .threaded_capture import ThreadedCapture
+from .cropped_capture import CroppedCapture
 
 from .cap import (
     SysInfo,

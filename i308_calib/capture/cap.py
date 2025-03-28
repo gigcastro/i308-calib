@@ -3,6 +3,7 @@ import cv2
 import yaml
 
 from i308_calib.capture import ThreadedCapture
+from i308_calib.capture import CroppedCapture
 
 CAPTURE_MODES = {
     'auto',
@@ -120,6 +121,13 @@ def check_crop(crop=None):
 
     except Exception as e:
         raise Exception(f"invalid crop: {crop}. must be in the format '<x_from>,<x_to>;<y_from>,<y_to>' in [0.0 .. 1.0]")
+
+    for v in [x0, xf, y0, yf]:
+        if not 0 <= v <= 1.0:
+            raise Exception("crop values must be expressed in proportion of the image [0..1]")
+
+    if x0 > xf or y0 > yf:
+        raise Exception(f"crop values-from must be less than values-to {ret}")
 
     return ret
 
@@ -277,6 +285,10 @@ def new_video_capture(config: CaptureConfig):
         raise Exception("Cannot open capture")
 
     cap.set(cv2.CAP_PROP_BUFFERSIZE, 1)
+
+    # cap.set(cv2.CAP_PROP_AUTOFOCUS, 0) # disable autofocus
+    if config.crop:
+        cap = CroppedCapture(cap, config.crop)
 
     if config.threaded:
         print("capturing is threaded")
