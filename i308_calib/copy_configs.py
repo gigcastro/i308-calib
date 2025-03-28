@@ -1,12 +1,22 @@
 import argparse
 import os
 import shutil
-import pkg_resources
+#
 
 
+def get_config_dir():
+    try:
+        import pkg_resources
+        config_dir = pkg_resources.resource_filename("i308_calib", "cfg")
+    except ImportError:
+        from importlib.resources import files
+        config_dir = str(files("i308_calib").joinpath("cfg"))
+
+    return config_dir
 def copy_configs(args):
     """Copy bundled config files to the current directory."""
-    config_dir = pkg_resources.resource_filename("i308_calib", "cfg")
+
+    config_dir = get_config_dir()
     dest_dir = args.target  # os.getcwd()
 
     if dest_dir != "" and not os.path.isdir(dest_dir):
