@@ -103,6 +103,27 @@ def check_threaded(threaded=None):
     return ret
 
 
+def check_crop(crop=None):
+    ret = True
+    if not crop:
+        return ret
+
+    try:
+
+        x, y = crop.split(";")
+        x0, xf = x.split(",")
+        y0, yf = y.split(",")
+        x0, xf = float(x0), float(xf)
+        y0, yf = float(y0), float(yf)
+
+        ret = [(x0, xf), (y0, yf)]
+
+    except Exception as e:
+        raise Exception(f"invalid crop: {crop}. must be in the format '<x_from>,<x_to>;<y_from>,<y_to>' in [0.0 .. 1.0]")
+
+    return ret
+
+
 class CaptureConfig:
 
     def __init__(
@@ -114,7 +135,8 @@ class CaptureConfig:
             capture_mode=None,
             name=None,
             threaded=None,
-            compression=None
+            compression=None,
+            crop=None,
 
     ):
         self.video = check_video(video)
@@ -125,6 +147,7 @@ class CaptureConfig:
         self.capture_mode = check_capture_mode(capture_mode)
         self.threaded = threaded
         self.compression = check_compression(compression)
+        self.crop = check_crop(crop)
 
     def __str__(self):
         ret = f"source: {self.video}; "
@@ -151,6 +174,8 @@ class CaptureConfig:
     def set_threaded(self, threaded):
         self.threaded = check_threaded(threaded)
 
+    def set_crop(self, crop):
+        self.crop = check_crop(crop)
 
 def from_yaml(file):
     with open(file, 'r') as f:
@@ -169,10 +194,12 @@ def from_yaml(file):
     capture_mode = parsed.get("capture_mode")
     threaded = parsed.get("threaded", True)
     compression = parsed.get("compression")
+    crop = parsed.get("crop")
 
     ret.set_resolutions(resolution, resolutions)
     ret.set_capture_mode(capture_mode)
     ret.set_compression(compression)
+    ret.set_crop(crop)
     ret.name = name
     ret.fps = fps
     ret.threaded = threaded
