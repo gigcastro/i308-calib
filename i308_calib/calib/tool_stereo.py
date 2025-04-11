@@ -403,15 +403,15 @@ def start(args):
             left_frame = frame[:, :int(w / 2), :]
             right_frame = frame[:, int(w / 2):, :]
 
-            if show_cam_name:
-                draw_text(left_frame, "left", font_scale=8, font_thickness=8, text_color_bg=None)
-                draw_text(right_frame, "right", font_scale=8, font_thickness=8, text_color_bg=None)
-
             # left_frame = cv2.rotate(left_frame, cv2.ROTATE_180)
             # right_frame = cv2.rotate(right_frame, cv2.ROTATE_180)
 
             show_img_left = left_frame.copy()
             show_img_right = right_frame.copy()
+
+            if show_cam_name:
+                draw_text(show_img_left, "left", font_scale=8, font_thickness=8, text_color_bg=None)
+                draw_text(show_img_right, "right", font_scale=8, font_thickness=8, text_color_bg=None)
 
 
             # draws so-far detected corners
