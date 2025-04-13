@@ -345,7 +345,9 @@ def start(args):
 
     # gets capture configuration
     cfg = get_capture_config(args)
-    cap = new_video_capture(cfg)
+
+    if cfg.video >= 0:
+        cap = new_video_capture(cfg)
 
     checkerboard = args.checkerboard
     checkerboard_world_points = args.square_size * board_points(checkerboard)
@@ -371,8 +373,12 @@ def start(args):
 
         while True:
 
-            # Capture frame-by-frame
-            ret, frame = cap.read()
+            if cfg.video >= 0:
+                # Capture frame-by-frame
+                ret, frame = cap.read()
+            else:
+                ret = True
+                frame =  np.zeros((cfg.resolution[0], cfg.resolution[1], 3), np.uint8)
 
             # if frame is read correctly ret is True
             if not ret:
