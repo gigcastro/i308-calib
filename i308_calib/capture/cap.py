@@ -318,7 +318,7 @@ def get_capture_config(
 
     if args.video:
         # Overrides config with args
-        ret.set_video(args.video)
+        ret.set_video(int(args.video))
 
     if args.resolution:
         # Overrides config with args
