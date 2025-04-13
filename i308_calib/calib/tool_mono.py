@@ -227,7 +227,7 @@ def start(args):
             ret, frame = cap.read()
         else:
             ret = True
-            frame =  np.zeros((cfg.resolution[0],cfg.resolution[1],3), np.uint8)
+            frame =  np.zeros((cfg.resolution[1], cfg.resolution[0], 3), np.uint8)
 
         # if frame is read correctly ret is True
         if not ret:
