@@ -343,7 +343,8 @@ def start(args):
 
 
     # When everything done, release the capture
-    cap.release()
+    if cfg.video >= 0:
+        cap.release()
     cv2.destroyAllWindows()
 
 
